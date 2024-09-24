@@ -4,7 +4,7 @@
     @Date:24-09-2024
     @last modified by:pooja
     @last modified time:24-09-2024
-    @title: add a new Contact to Address Book , Use Console to add 
+    @title: edit Contact to Address Book , Use Console to add 
 
 '''
 
@@ -39,13 +39,36 @@ class AddressBook:
         else:
             for contact in self.contacts:
                 print(contact)
+    def find_contact(self,first_name,last_name):
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                return contact
+        return None
+    def edit_contact(self,first_name,last_name):
+        contact = self.find_contact(first_name,last_name)
+        if contact:
+            print("editing conatct")
+            print(contact)   
+            contact.first_name = input("Enter new First Name : ") or contact.first_name
+            contact.last_name = input("Enter new Last Name: ") or contact.last_name
+            contact.address = input("Enter new Address : ") or contact.address
+            contact.city = input("Enter new City: ") or contact.city
+            contact.state = input("Enter new State: ") or contact.state
+            contact.zip_code = input("Enter new Zip Code : ") or contact.zip_code
+            contact.phone_number = input("Enter new Phone Number: ") or contact.phone_number
+            contact.email = input("Enter new Email : ") or contact.email
+            
+            print("Contact updated successfully.")
+        else:
+            print("Contact not found.")
+     
 
 def main():
     print("Welcome to Address Book Program")
     address_book = AddressBook()
 
     while True:
-        print("\nEnter 1 to Add Contact, 2 to View Contacts, 3 to Exit:")
+        print("\nEnter 1 to Add Contact, 2 to View Contacts, 3 Edit contact,4 to exit:")
         choice = input("Choice: ")
 
         if choice == '1':
@@ -65,6 +88,11 @@ def main():
             address_book.view_contacts()
 
         elif choice == '3':
+            first_name = input("Enter the First Name of the contact to edit: ")
+            last_name = input("Enter the Last Name of the contact to edit: ")
+            address_book.edit_contact(first_name, last_name)
+
+        elif choice == '4':
             print("exit")
             break
 
