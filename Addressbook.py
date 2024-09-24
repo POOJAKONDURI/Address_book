@@ -4,7 +4,7 @@
     @Date:24-09-2024
     @last modified by:pooja
     @last modified time:24-09-2024
-    @title: edit Contact to Address Book , Use Console to add 
+    @title: to delete Contact in Address Book 
 
 '''
 
@@ -61,14 +61,20 @@ class AddressBook:
             print("Contact updated successfully.")
         else:
             print("Contact not found.")
-     
+    def delete_contact(self,first_name,last_name):
+        contact = self.find_contact(first_name,last_name)
+        if contact:
+            self.contacts.remove(contact)
+            print(f"{first_name},{last_name} is deleted now")
+        else:
+            print("no contact found")
 
 def main():
     print("Welcome to Address Book Program")
     address_book = AddressBook()
 
     while True:
-        print("\nEnter 1 to Add Contact, 2 to View Contacts, 3 Edit contact,4 to exit:")
+        print("\nEnter 1 to Add Contact, 2 to View Contacts, 3 Edit contact,4 delete person,5 exit:")
         choice = input("Choice: ")
 
         if choice == '1':
@@ -93,6 +99,11 @@ def main():
             address_book.edit_contact(first_name, last_name)
 
         elif choice == '4':
+            first_name = input("Enter the First Name of the contact to edit: ")
+            last_name = input("Enter the Last Name of the contact to edit: ")
+            address_book.delete_contact(first_name,last_name)
+
+        elif choice == '5':
             print("exit")
             break
 
