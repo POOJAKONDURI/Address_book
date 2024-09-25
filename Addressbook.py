@@ -27,7 +27,7 @@ class Contact:
 
 class AddressBook:
     def __init__(self):
-        self.contacts = []
+        self.contacts = [] # act as collection class
 
     def add_contact(self, contact):
         self.contacts.append(contact)
@@ -57,6 +57,7 @@ class AddressBook:
             contact.zip_code = input("Enter new Zip Code : ") or contact.zip_code
             contact.phone_number = input("Enter new Phone Number: ") or contact.phone_number
             contact.email = input("Enter new Email : ") or contact.email
+
             
             print("Contact updated successfully.")
         else:
@@ -68,6 +69,23 @@ class AddressBook:
             print(f"{first_name},{last_name} is deleted now")
         else:
             print("no contact found")
+def add_multiple_contacts(address_book):
+    while True:
+        first_name = input("Enter First Name: ")
+        last_name = input("Enter Last Name: ")
+        address = input("Enter Address: ")
+        city = input("Enter City: ")
+        state = input("Enter State: ")
+        zip_code = input("Enter Zip Code: ")
+        phone_number = input("Enter Phone Number: ")
+        email = input("Enter Email: ")
+
+        contact = Contact(first_name, last_name, address, city, state, zip_code, phone_number, email)
+        address_book.add_contact(contact)
+
+        more_contacts = input("Would you like to add another contact? (yes/no): ").lower()
+        if more_contacts != 'yes':
+            break    
 
 def main():
     print("Welcome to Address Book Program")
@@ -78,17 +96,7 @@ def main():
         choice = input("Choice: ")
 
         if choice == '1':
-            first_name = input("Enter First Name: ")
-            last_name = input("Enter Last Name: ")
-            address = input("Enter Address: ")
-            city = input("Enter City: ")
-            state = input("Enter State: ")
-            zip_code = input("Enter Zip: ")
-            phone_number = input("Enter Phone Number: ")
-            email = input("Enter Email: ")
-
-            contact = Contact(first_name, last_name, address, city, state, zip_code, phone_number, email)
-            address_book.add_contact(contact)
+            add_multiple_contacts(address_book)
 
         elif choice == '2':
             address_book.view_contacts()
