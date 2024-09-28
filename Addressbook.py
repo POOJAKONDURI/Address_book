@@ -30,9 +30,12 @@ class AddressBook:
         self.contacts = [] # act as collection class
 
     def add_contact(self, contact):
-        self.contacts.append(contact)
-        print("Contact added.")
-
+        if self.find_contact(contact.first_name, contact.last_name):
+            print(f"Contact '{contact.first_name} {contact.last_name}' already exists in the address book.")
+        else:
+            self.contacts.append(contact)
+            print("Contact added.")
+            
     def view_contacts(self):
         if not self.contacts:
             print("No contacts.")
