@@ -70,6 +70,13 @@ class AddressBook:
         else:
             print("no contact found")
 
+    def search_by_city_or_state(self, city=None, state=None):
+        results = []
+        for contact in self.contacts:
+            if (city and contact.city == city) or (state and contact.state == state):
+                results.append(contact)
+        return results
+
 def add_multiple_contacts(address_book):
     while True:
         first_name = input("Enter First Name: ")
@@ -116,7 +123,15 @@ class AddressBookSystem:
             for name in self.address_books:
                 print(f"- {name}")
 
-
+    def search_across_books(self, city=None, state=None):
+        results = []
+        for name, address_book in self.address_books.items():
+            matches = address_book.search_by_city_or_state(city, state)
+            if matches:
+                results.append((name, matches))
+        return results
+    
+   
 def add_multiple_contacts(address_book):
     while True:
         first_name = input("Enter First Name: ")
@@ -144,7 +159,8 @@ def main():
         print("\n1. Add New Address Book")
         print("2. List Address Books")
         print("3. Select Address Book")
-        print("4. Exit")
+        print("4. Search Across Address Books by City or State")
+        print("5. Exit")
         choice = input("Choice: ")
 
         if choice == '1':
@@ -186,6 +202,23 @@ def main():
                         print("Invalid choice. Please try again.")
 
         elif choice == '4':
+            city = input("Enter City (or leave blank to skip): ") or None
+            state = input("Enter State (or leave blank to skip): ") or None
+
+            if not city and not state:
+                print(" enter either a City or a State.")
+            else:
+                results = system.search_across_books(city, state)
+                if not results:
+                    print("No matching contacts .")
+                else:
+                    print("\nSearch Results:")
+                    for book_name, contacts in results:
+                        print(f"\n Address Book: {book_name} ---")
+                        for contact in contacts:
+                            print(contact)
+
+        elif choice == '5':
             print("Exiting the program.")
             break
 
