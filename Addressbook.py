@@ -70,7 +70,72 @@ class AddressBook:
         except FileNotFoundError:
             print(f"{file_name} not found.")
 
-    # Other methods (view_contacts, sort_by_city, sort_by_state, etc.) remain unchanged
+    def view_contacts(self):
+        if not self.contacts:
+            print("No contacts.")
+        else:
+            sorted_contacts = sorted(self.contacts)  # Sort contacts alphabetically
+            for contact in sorted_contacts:
+                print(contact)
+
+    # Sort contacts by City
+    def sort_by_city(self):
+        sorted_contacts = sorted(self.contacts, key=lambda contact: contact.city.lower())
+        for contact in sorted_contacts:
+            print(contact)
+
+    # Sort contacts by State
+    def sort_by_state(self):
+        sorted_contacts = sorted(self.contacts, key=lambda contact: contact.state.lower())
+        for contact in sorted_contacts:
+            print(contact)
+
+    # Sort contacts by Zip Code
+    def sort_by_zip(self):
+        sorted_contacts = sorted(self.contacts, key=lambda contact: contact.zip_code)
+        for contact in sorted_contacts:
+            print(contact)
+
+    def find_contact(self, first_name, last_name):
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                return contact
+        return None
+
+    def edit_contact(self, first_name, last_name):
+        contact = self.find_contact(first_name, last_name)
+        if contact:
+            print("Editing contact")
+            print(contact)   
+            contact.first_name = input("Enter new First Name: ") or contact.first_name
+            contact.last_name = input("Enter new Last Name: ") or contact.last_name
+            contact.address = input("Enter new Address: ") or contact.address
+            contact.city = input("Enter new City: ") or contact.city
+            contact.state = input("Enter new State: ") or contact.state
+            contact.zip_code = input("Enter new Zip Code: ") or contact.zip_code
+            contact.phone_number = input("Enter new Phone Number: ") or contact.phone_number
+            contact.email = input("Enter new Email: ") or contact.email
+
+            print("Contact updated successfully.")
+        else:
+            print("Contact not found.")
+
+    def delete_contact(self, first_name, last_name):
+        contact = self.find_contact(first_name, last_name)
+        if contact:
+            self.contacts.remove(contact)
+            self.city_dict[contact.city].remove(contact)
+            self.state_dict[contact.state].remove(contact)
+            print(f"{first_name}, {last_name} is deleted now.")
+        else:
+            print("No contact found.")
+
+    def search_by_city(self, city):
+        return self.city_dict.get(city, [])
+
+    def search_by_state(self, state):
+        return self.state_dict.get(state, [])
+
 
 
 class AddressBookSystem:
