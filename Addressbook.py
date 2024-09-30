@@ -1,4 +1,4 @@
-import csv
+import json
 from collections import defaultdict
 
 class Contact:
@@ -20,23 +20,30 @@ class Contact:
                 f"{self.address}, {self.city}, {self.state}, {self.zip_code}\n"
                 f"Phone: {self.phone_number}\nEmail: {self.email}")
 
-    # Convert contact to dictionary for CSV serialization
-    def to_list(self):
-        return [
-            self.first_name,
-            self.last_name,
-            self.address,
-            self.city,
-            self.state,
-            self.zip_code,
-            self.phone_number,
-            self.email
-        ]
+    def to_dict(self):
+        return {
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'zip_code': self.zip_code,
+            'phone_number': self.phone_number,
+            'email': self.email
+        }
 
-    # Create a contact from a list (CSV deserialization)
-    @classmethod
-    def from_list(cls, data):
-        return cls(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7])
+    @staticmethod
+    def from_dict(data):
+        return Contact(
+            data['first_name'],
+            data['last_name'],
+            data['address'],
+            data['city'],
+            data['state'],
+            data['zip_code'],
+            data['phone_number'],
+            data['email']
+        )
 
 
 class AddressBook:
@@ -51,28 +58,6 @@ class AddressBook:
         self.state_dict[contact.state].append(contact)
         print("Contact added.")
 
-    # Save contacts to a CSV file
-    def save_to_file(self, file_name):
-        with open(file_name, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(["First Name", "Last Name", "Address", "City", "State", "Zip Code", "Phone Number", "Email"])  # Header
-            for contact in self.contacts:
-                writer.writerow(contact.to_list())
-        print(f"Contacts saved to {file_name}.")
-
-    # Load contacts from a CSV file
-    def load_from_file(self, file_name):
-        try:
-            with open(file_name, 'r') as file:
-                reader = csv.reader(file)
-                next(reader)  # Skip header
-                for row in reader:
-                    contact = Contact.from_list(row)
-                    self.add_contact(contact)
-            print(f"Contacts loaded from {file_name}.")
-        except FileNotFoundError:
-            print(f"{file_name} not found.")
-
     def view_contacts(self):
         if not self.contacts:
             print("No contacts.")
@@ -81,19 +66,16 @@ class AddressBook:
             for contact in sorted_contacts:
                 print(contact)
 
-    # Sort contacts by City
     def sort_by_city(self):
         sorted_contacts = sorted(self.contacts, key=lambda contact: contact.city.lower())
         for contact in sorted_contacts:
             print(contact)
 
-    # Sort contacts by State
     def sort_by_state(self):
         sorted_contacts = sorted(self.contacts, key=lambda contact: contact.state.lower())
         for contact in sorted_contacts:
             print(contact)
 
-    # Sort contacts by Zip Code
     def sort_by_zip(self):
         sorted_contacts = sorted(self.contacts, key=lambda contact: contact.zip_code)
         for contact in sorted_contacts:
@@ -109,7 +91,7 @@ class AddressBook:
         contact = self.find_contact(first_name, last_name)
         if contact:
             print("Editing contact")
-            print(contact)
+            print(contact)   
             contact.first_name = input("Enter new First Name: ") or contact.first_name
             contact.last_name = input("Enter new Last Name: ") or contact.last_name
             contact.address = input("Enter new Address: ") or contact.address
@@ -139,9 +121,29 @@ class AddressBook:
     def search_by_state(self, state):
         return self.state_dict.get(state, [])
 
+    def save_to_json(self, filename):
+        with open(filename, 'w') as f:
+            json_contacts = [contact.to_dict() for contact in self.contacts]
+            json.dump(json_contacts, f)
+        print(f"Address Book saved to {filename}.")
+
+    def load_from_json(self, filename):
+        try:
+            with open(filename, 'r') as f:
+                json_contacts = json.load(f)
+                self.contacts = [Contact.from_dict(data) for data in json_contacts]
+                self.city_dict.clear()
+                self.state_dict.clear()
+                for contact in self.contacts:
+                    self.city_dict[contact.city].append(contact)
+                    self.state_dict[contact.state].append(contact)
+                print(f"Address Book loaded from {filename}.")
+        except FileNotFoundError:
+            print("File not found. Please check the filename.")
+
 
 class AddressBookSystem:
-
+    
     def __init__(self):
         self.address_books = {}
 
@@ -167,19 +169,6 @@ class AddressBookSystem:
             for name in self.address_books:
                 print(f"- {name}")
 
-    # Save all address books to CSV files
-    def save_all_books(self):
-        for name, address_book in self.address_books.items():
-            file_name = f"{name}.csv"
-            address_book.save_to_file(file_name)
-
-    # Load all address books from CSV files
-    def load_all_books(self):
-        for name in self.address_books:
-            file_name = f"{name}.csv"
-            self.address_books[name].load_from_file(file_name)
-
-    # Search by city or state across books
     def search_across_books(self, city=None, state=None):
         results = []
         for name, address_book in self.address_books.items():
@@ -221,10 +210,8 @@ def main():
         print("\n1. Add New Address Book")
         print("2. List Address Books")
         print("3. Select Address Book")
-        print("4. Save All Address Books to File")
-        print("5. Load Address Books from File")
-        print("6. Search Across Address Books by City or State")
-        print("7. Exit")
+        print("4. Search Across Address Books by City or State")
+        print("5. Exit")
         choice = input("Choice: ")
 
         if choice == '1':
@@ -245,7 +232,9 @@ def main():
                     print("3. Edit Contact")
                     print("4. Delete Contact")
                     print("5. Sort Contacts")
-                    print("6. Back to Main Menu")
+                    print("6. Save Address Book to JSON")
+                    print("7. Load Address Book from JSON")
+                    print("8. Back to Main Menu")
                     sub_choice = input("Choice: ")
 
                     if sub_choice == '1':
@@ -261,48 +250,50 @@ def main():
                         last_name = input("Enter the Last Name of the contact to delete: ")
                         selected_book.delete_contact(first_name, last_name)
                     elif sub_choice == '5':
-                        print("\n1. Sort by City")
-                        print("2. Sort by State")
-                        print("3. Sort by Zip Code")
+                        print("1. Sort by Name")
+                        print("2. Sort by City")
+                        print("3. Sort by State")
+                        print("4. Sort by Zip Code")
                         sort_choice = input("Choice: ")
                         if sort_choice == '1':
-                            selected_book.sort_by_city()
+                            selected_book.view_contacts()
                         elif sort_choice == '2':
-                            selected_book.sort_by_state()
+                            selected_book.sort_by_city()
                         elif sort_choice == '3':
+                            selected_book.sort_by_state()
+                        elif sort_choice == '4':
                             selected_book.sort_by_zip()
                         else:
                             print("Invalid choice.")
                     elif sub_choice == '6':
+                        filename = input("Enter the filename to save the Address Book: ")
+                        selected_book.save_to_json(filename)
+                    elif sub_choice == '7':
+                        filename = input("Enter the filename to load the Address Book from: ")
+                        selected_book.load_from_json(filename)
+                    elif sub_choice == '8':
                         break
                     else:
                         print("Invalid choice.")
 
         elif choice == '4':
-            system.save_all_books()
-
-        elif choice == '5':
-            system.load_all_books()
-
-        elif choice == '6':
             city = input("Enter city to search: ")
             state = input("Enter state to search: ")
             results = system.search_across_books(city, state)
             if results:
                 for name, matches in results:
-                    print(f"\nAddress Book: {name}")
-                    for contact in matches:
-                        print(contact)
+                    print(f"Address Book: {name}")
+                    for match in matches:
+                        print(match)
             else:
-                print("No matches found.")
+                print("No contacts found.")
 
-        elif choice == '7':
-            print("Exiting the program.")
+        elif choice == '5':
+            print("Goodbye!")
             break
-
         else:
-            print("Invalid choice. Please try again.")
+            print("Invalid choice.")
+
 
 if __name__ == "__main__":
     main()
-                    
