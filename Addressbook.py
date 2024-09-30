@@ -1,13 +1,3 @@
-'''
-
-    @Author:pooja
-    @Date:30-09-2024
-    @last modified by:pooja
-    @last modified time:30-09-2024
-    @title: to delete Contact in Address Book 
-
-'''
-
 from collections import defaultdict
 
 class Contact:
@@ -49,6 +39,24 @@ class AddressBook:
             sorted_contacts = sorted(self.contacts)  # Sort contacts alphabetically
             for contact in sorted_contacts:
                 print(contact)
+
+    # Sort contacts by City
+    def sort_by_city(self):
+        sorted_contacts = sorted(self.contacts, key=lambda contact: contact.city.lower())
+        for contact in sorted_contacts:
+            print(contact)
+
+    # Sort contacts by State
+    def sort_by_state(self):
+        sorted_contacts = sorted(self.contacts, key=lambda contact: contact.state.lower())
+        for contact in sorted_contacts:
+            print(contact)
+
+    # Sort contacts by Zip Code
+    def sort_by_zip(self):
+        sorted_contacts = sorted(self.contacts, key=lambda contact: contact.zip_code)
+        for contact in sorted_contacts:
+            print(contact)
 
     def find_contact(self, first_name, last_name):
         for contact in self.contacts:
@@ -182,7 +190,8 @@ def main():
                     print("2. View Contacts")
                     print("3. Edit Contact")
                     print("4. Delete Contact")
-                    print("5. Back to Main Menu")
+                    print("5. Sort Contacts")
+                    print("6. Back to Main Menu")
                     sub_choice = input("Choice: ")
 
                     if sub_choice == '1':
@@ -198,6 +207,22 @@ def main():
                         last_name = input("Enter the Last Name of the contact to delete: ")
                         selected_book.delete_contact(first_name, last_name)
                     elif sub_choice == '5':
+                        print("1. Sort by Name")
+                        print("2. Sort by City")
+                        print("3. Sort by State")
+                        print("4. Sort by Zip Code")
+                        sort_choice = input("Choose sorting method: ")
+                        if sort_choice == '1':
+                            selected_book.view_contacts()  # Already sorted by name
+                        elif sort_choice == '2':
+                            selected_book.sort_by_city()
+                        elif sort_choice == '3':
+                            selected_book.sort_by_state()
+                        elif sort_choice == '4':
+                            selected_book.sort_by_zip()
+                        else:
+                            print("Invalid choice. Please try again.")
+                    elif sub_choice == '6':
                         break
                     else:
                         print("Invalid choice. Please try again.")
@@ -226,6 +251,7 @@ def main():
         else:
             print("Invalid choice, please try again.") 
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
+
+       
