@@ -116,17 +116,20 @@ class AddressBookSystem:
 
     def search_across_books(self, city=None, state=None):
         results = []
+        city_count = 0
+        state_count = 0
         for name, address_book in self.address_books.items():
             if city:
                 matches = address_book.search_by_city(city)
                 if matches:
-                    results.append((name, matches))
+                    city_count += len(matches)
+                    results.append((name, matches, 'city'))
             if state:
                 matches = address_book.search_by_state(state)
                 if matches:
-                    results.append((name, matches))
-        return results
-
+                    state_count += len(matches)
+                    results.append((name, matches, 'state'))
+        return results, city_count, state_count
 
 def add_multiple_contacts(address_book):
     while True:
@@ -200,19 +203,27 @@ def main():
         elif choice == '4':
             city = input("Enter City (or leave blank to skip): ").strip() or None
             state = input("Enter State (or leave blank to skip): ").strip() or None
-
+            
             if not city and not state:
                 print("Please enter either a City or a State.")
             else:
-                results = system.search_across_books(city, state)
+                results, city_count, state_count = system.search_across_books(city, state)
+                
                 if not results:
                     print("No matching contacts found.")
                 else:
                     print("\nSearch Results:")
-                    for book_name, contacts in results:
+                    for book_name, contacts, search_type in results:
                         print(f"\n--- Address Book: {book_name} ---")
                         for contact in contacts:
                             print(contact)
+                    
+                    # Display count information
+                    if city:
+                        print(f"\nTotal contacts found by city '{city}': {city_count}")
+                    if state:
+                        print(f"Total contacts found by state '{state}': {state_count}")
+                        
 
         elif choice == '5':
             print("Exiting the program.")
