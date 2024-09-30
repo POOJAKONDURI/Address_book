@@ -21,6 +21,9 @@ class Contact:
         self.phone_number = phone_number
         self.email = email
 
+    def __lt__(self, other):
+        return (self.first_name + " " + self.last_name).lower() < (other.first_name + " " + other.last_name).lower()
+
     def __str__(self):
         return (f"{self.first_name} {self.last_name}\n"
                 f"{self.address}, {self.city}, {self.state}, {self.zip_code}\n"
@@ -28,7 +31,7 @@ class Contact:
 
 class AddressBook:
     def __init__(self):
-        self.contacts = [] # Act as a collection class
+        self.contacts = []  # Act as a collection class
         self.city_dict = defaultdict(list)  # Dictionary to store contacts by city
         self.state_dict = defaultdict(list)  # Dictionary to store contacts by state
 
@@ -38,11 +41,13 @@ class AddressBook:
         self.state_dict[contact.state].append(contact)
         print("Contact added.")
 
+    # Sort contacts alphabetically by name and print them
     def view_contacts(self):
         if not self.contacts:
             print("No contacts.")
         else:
-            for contact in self.contacts:
+            sorted_contacts = sorted(self.contacts)  # Sort contacts alphabetically
+            for contact in sorted_contacts:
                 print(contact)
 
     def find_contact(self, first_name, last_name):
